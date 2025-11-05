@@ -1,0 +1,765 @@
+body { 
+    font-family: 'Montserrat', Arial, sans-serif; 
+    margin: 0; padding: 0; 
+    background-color: #314150; 
+    color: #333;
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative; 
+}
+
+/* Фон нейронной сети */
+#neural-net-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    background-color: #314150;
+}
+
+/* Основной контейнер модального окна */
+.modal {
+    display: none; /* Скрыто по умолчанию */
+    position: fixed;
+    z-index: 1000; /* Поверх всего контента */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.7); /* Темный фон */
+}
+
+/* Содержимое модального окна */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* Центрируем */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Или фиксированная ширина */
+    max-width: 400px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+/* Анимация загрузки (простой спиннер) */
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Кнопка закрытия */
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+header {
+    position: relative; 
+    z-index: 10; 
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    /* --- АНИМИРОВАННЫЙ ГРАДИЕНТ --- */
+    background: linear-gradient(-45deg, #2c3e5080, #4ca2af88, #2c3e5080, #4ca2af7a);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+header h1 { 
+    margin: 0; font-size: 1.5em; 
+}
+
+.logo-title {
+    display: flex;
+    align-items: center;
+    font-family: 'Montserrat', sans-serif; 
+}
+
+.logo-title img {
+    height: 60px;
+    width: 60px;
+    margin-right: 15px;
+}
+
+.wallet-info {
+    display: flex;
+    flex-wrap: wrap; 
+    gap: 10px;
+    align-items: center;
+}
+
+.info-tag {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    color: #b0e0e6;
+    white-space: nowrap;
+}
+
+/* --- СТИЛИ КНОПОК HEADER --- */
+#connectButton, #addSepoliaButton { 
+    font-family: 'Montserrat', sans-serif; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-size: 1em; 
+    transition: background-color 0.3s, opacity 0.3s; 
+    white-space: nowrap; 
+    font-weight: 700;
+}
+
+#connectButton { 
+    background-color: #27ae60;
+    color: white;
+}
+
+#connectButton:hover { 
+    background-color: #2ecc71;
+}
+
+#addSepoliaButton {
+    background-color: #3498db;
+    color: white;
+}
+
+#addSepoliaButton:hover{
+    background-color: #2980b9;
+}
+
+#addTokenButton {
+    background-color: #3498db; 
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+#addTokenButton:hover {
+    background-color: #2980b9;
+}
+
+
+
+/* Стили для кнопки сбора всех наград (Гибкий) */
+.button-claim-rewards-all {
+    /* Основной вид */
+    display: block;
+    width: 100%;
+    padding: 12px 15px;
+    margin-top: 10px; /* Отделяем от других элементов */
+    
+    /* Цвета и границы */
+    background-color: #4CAF50; /* Зеленый - для действия "Собрать/Получить" */
+    color: #ffffff;
+    border: none;
+    border-radius: 8px; /* Немного закругленные края */
+    
+    /* Текст и курсор */
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s ease, opacity 0.3s ease, transform 0.1s ease;
+}
+
+/* Эффект при наведении */
+.button-claim-rewards-all:not([disabled]):hover {
+    background-color: #45a049; /* Немного темнее */
+    transform: translateY(-1px); /* Легкий подъем */
+}
+
+/* Эффект при нажатии */
+.button-claim-rewards-all:not([disabled]):active {
+    background-color: #3e8e41; /* Еще темнее */
+    transform: translateY(0);
+}
+
+/* Стили для отключенной кнопки (когда нет наград) */
+.button-claim-rewards-all[disabled] {
+    background-color: #6c757d; /* Серый цвет для неактивного состояния */
+    color: #c4c4c4;
+    cursor: not-allowed;
+    opacity: 0.8;
+}
+
+ /* Если вы хотите, чтобы кнопка была менее широкой  */
+
+.flexible-card .button-claim-rewards-all {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+} 
+
+
+
+
+/* --- ОСНОВНОЙ КОНТЕНТ --- */
+main { 
+    flex-grow: 1; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; 
+    padding: 30px 20px; 
+    gap: 40px; 
+}
+
+.app-box { 
+    background-color: rgba(116, 116, 116, 0); 
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.062);
+    padding: 30px; 
+    border-radius: 15px; 
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); 
+    width: 100%; 
+    max-width: 450px; 
+    text-align: center; 
+}
+
+.app-box h2 { 
+    color: #ecf0f1; 
+    margin-bottom: 20px; 
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.app-box h3, .app-box h4 {
+    color: #4ca2af; 
+    margin-top: 25px;
+}
+
+.app-box p { 
+    color: #ecf0f1; 
+    font-size: 1.1em;
+}
+
+.app-box input[type="number"], .app-box select { 
+    width: 100%; 
+    box-sizing: border-box; 
+    padding: 12px; 
+    margin-bottom: 15px; 
+    border: 1px solid #3498db; 
+    border-radius: 8px; 
+    font-size: 1em; 
+    background-color: rgba(255, 255, 255, 0.95);
+    color: #333;
+}
+
+/* --- СТИЛИ КАРТОЧЕК СТЕЙКИНГА --- */
+#userStakesContainer {
+    margin-top: 20px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.stake-card {
+    background-color: rgba(76, 160, 175, 0.15); 
+    border: 1px solid #4ca2af;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.stake-card h4 {
+    margin-top: 0;
+    color: #2ecc71;
+    font-size: 1.2em;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+
+.stake-card p {
+    margin: 5px 0;
+    font-size: 0.95em;
+    color: #ecf0f1;
+}
+
+.stake-card .timer-display {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #f39c12;
+    margin: 10px 0;
+}
+
+.stake-card button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.stake-card button:disabled {
+    background-color: #555 !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* --- СТИЛИ КНОПОК ФОРМЫ --- */
+.app-box button { 
+    color: white; 
+    border: none; 
+    padding: 12px 25px; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-size: 1.1em; 
+    transition: background-color 0.3s; 
+    width: 100%; 
+    margin-top: 10px; 
+    font-weight: 700;
+}
+
+.button-mint { background-color: #27ae60; }
+.button-mint:hover{background-color: #3498db;}
+.button-stake { background-color: #f39c12; }
+.button-stake:hover { background-color: #e67e22; }
+.button-unstake { background-color: #e74c3c; } 
+.button-unstake:hover:not(:disabled) { background-color: #c0392b; }
+.button-approve { background-color: #9b59b6; }
+.button-approve:hover { background-color: #8e44ad; }
+
+
+#mintStatus, #stakingStatus { 
+    margin-top: 15px; 
+    font-weight: bold; 
+    min-height: 20px; 
+    color: #e74c3c;
+}
+
+.calculator { 
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 25px; 
+    padding-top: 25px; 
+}
+
+.calculator h4 { margin-top: 0; color: #f39c12; }
+
+.hidden {display: none; }
+
+
+/* СТИЛИ ДЛЯ БЛОКА КРИПТОВАЛЮТНЫХ КОТИРОВОК (ПЛИТКИ)  */
+
+
+/* Основной контейнер для блока котировок */
+#crypto-prices-block {
+    background: #1f2a3844; 
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+#crypto-prices-block h3 {
+    color: #4CAF50;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 25px; /* Увеличили отступ */
+    font-size: 1.4em;
+    border-bottom: 2px solid #3e5066;
+    padding-bottom: 10px;
+}
+
+/* Контейнер для сетки плиток (используем CSS Grid) */
+.crypto-grid {
+    display: grid;
+    /* Создаем 2 колонки, каждая занимает равное пространство */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 15px; /* Расстояние между плитками */
+    justify-items: center; /* Центрируем плитки в ячейках */
+}
+
+/* Стилизация отдельной плитки котировки */
+.crypto-tile {
+    background: #2a3b4c3f; /* Чуть светлее фон для каждой плитки */
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    width: 100%; /* Занимает всю ширину колонки */
+    max-width: 180px; /* Максимальная ширина плитки, чтобы не растягивались на больших экранах */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex; /* Flexbox для содержимого плитки */
+    flex-direction: column; /* Элементы друг под другом */
+    justify-content: space-between; /* Распределение пространства */
+    align-items: center; /* Центрирование содержимого */
+}
+
+/* Эффект при наведении на плитку */
+.crypto-tile:hover {
+    transform: translateY(-3px); /* Легкий подъем */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Стиль для названия котировки (BTC/USDT) */
+.crypto-tile .tile-symbol {
+    font-size: 0.95em;
+    font-weight: 500;
+    color: #b0c4de; /* Более мягкий цвет для символа */
+    margin-bottom: 8px;
+    text-transform: uppercase;
+}
+
+/* Стиль для отображения цены */
+.crypto-tile .tile-price {
+    font-size: 1.5em; /* Увеличили размер цены */
+    font-weight: 700;
+    color: #4CAF50; /* Зеленый цвет для цены */
+    min-height: 24px; /* Чтобы плитка не прыгала при "Загрузке..." */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Адаптация для мобильных устройств (если нужно больше колонок на больших экранах) */
+@media (min-width: 768px) {
+    .crypto-grid {
+        /* На экранах шире 768px делаем 3 колонки */
+        grid-template-columns: repeat(3, 1fr); 
+    }
+}
+
+@media (min-width: 1024px) {
+    .crypto-grid {
+        /* На экранах шире 1024px делаем 4 колонки */
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+
+
+
+/* ----------------------------------------------------------------- */
+/* СТИЛИ ДЛЯ ФОРМЫ ОТПРАВКИ ТОКЕНОВ MCF */
+/* ----------------------------------------------------------------- */
+
+#transferFormBlock {
+    background: #1f2a38; 
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+}
+
+#transferFormBlock h3 {
+    color: #4CAF50;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.3em;
+    border-bottom: 1px solid #3e5066;
+    padding-bottom: 10px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #b0c4de;
+    font-weight: bold;
+}
+
+/* Стили для полей ввода */
+#recipientAddressInput,
+#transferAmountInput {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #3e5066;
+    border-radius: 8px;
+    background-color: #2a3b4c; 
+    color: #ffffff;
+    font-size: 1em;
+    box-sizing: border-box; 
+    transition: border-color 0.3s;
+}
+
+#recipientAddressInput:focus,
+#transferAmountInput:focus {
+    border-color: #4CAF50; 
+    outline: none;
+}
+
+/* Стили для кнопки "Отправить" */
+#sendTokenButton {
+    width: 100%;
+    padding: 12px;
+    margin-top: 15px;
+    background-color: #4CAF50;
+    color: white;
+    font-weight: bold;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s;
+}
+
+#sendTokenButton:hover {
+    background-color: #45a049; 
+}
+
+#sendTokenButton:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Стили для сообщения о статусе транзакции */
+#transferStatus {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 0.9em;
+    color: #ffcccc; 
+    background-color: #4a1717; 
+    border: 1px solid #8b0000;
+}
+
+/* Стиль для успешной транзакции */
+#transferStatus.success {
+    color: #ccffcc;
+    background-color: #174a17;
+    border-color: #008b00;
+}
+
+/* Общий стиль для скрытия
+.hidden {
+    display: none !important;
+} */
+
+
+
+
+
+/* --- FOOTER --- */
+footer { 
+    color: white; 
+    text-align: center; 
+    padding: 20px; 
+    margin-top: auto; 
+    background: linear-gradient(-45deg, #2c3e50b2, #4ca2afab, #2c3e50a4, #4ca2afa8);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    z-index: 10;
+}
+
+.social-links a { 
+    color: #4ca2af; 
+    margin: 0 10px; 
+    text-decoration: none; 
+    font-size: 1.1em; 
+    transition: color 0.3s;
+}
+.social-links a:hover {
+    color: #2ecc71;
+}
+
+
+
+/* Стили для кнопки, когда NFT уже заминчен текущим пользователем */
+.minted-owned {
+    background-color: #6c757d !important; /* Серый цвет */
+    color: #fff;
+    cursor: default;
+    border-color: #6c757d;
+    opacity: 0.8;
+}
+
+/* При наведении убираем hover-эффект для заминченной кнопки */
+.minted-owned:hover {
+    background-color: #6c757d !important;
+}
+
+/* ----------------------------------------------------------------- */
+/* СТИЛИ NFT КАРТОЧЕК */
+/* ----------------------------------------------------------------- */
+
+#nftMintSection {
+    margin-top: 40px;
+    padding: 20px 0;
+    color: #ffffff;
+}
+
+#nftMintSection h2 {
+    text-align: center;
+    color: #4CAF50;
+    margin-bottom: 30px;
+    font-size: 1.8em;
+}
+
+#nftCardsContainer {
+    /* Создаем адаптивную сетку */
+    display: grid;
+    /* На десктопе 4 колонки, если есть место */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 0 10px;
+}
+
+.nft-card {
+    background: #1f2a38;
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 1px solid #3e5066;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.nft-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.nft-image-wrapper {
+    width: 100%;
+    /* Обеспечивает квадратное пространство для изображения */
+    aspect-ratio: 1 / 1; 
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.nft-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Изображение будет покрывать все пространство */
+    display: block;
+}
+
+.nft-title {
+    color: #b0c4de;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.nft-price {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #4CAF50;
+    margin-bottom: 15px;
+}
+
+/* Стили для кнопки минта */
+.mint-button {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff; /* Синий цвет для действия */
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.mint-button:hover {
+    background-color: #0056b3;
+}
+
+.mint-button:disabled {
+    background-color: #555;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+/* Стили для мобильных устройств (уменьшаем колонки до 2) */
+@media (max-width: 992px) {
+    #nftCardsContainer {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+/* Стили для очень маленьких экранов (одна колонка) */
+@media (max-width: 500px) {
+    #nftCardsContainer {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+
+
+
+/* --- АНИМАЦИЯ --- */
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* --- АДАПТИВНОСТЬ --- */
+@media (max-width: 1000px) { 
+    main { 
+        flex-direction: column; 
+        align-items: center; 
+        gap: 30px; 
+    } 
+    .app-box { 
+        max-width: 90%; 
+        padding: 20px;
+    } 
+}
+
+@media (max-width: 600px) {
+    header {
+        padding: 10px;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .wallet-info {
+        justify-content: center;
+        width: 100%;
+    }
+    .info-tag, #connectButton, #addSepoliaButton {
+        flex-grow: 1; 
+        text-align: center;
+        font-size: 0.9em;
+        padding: 8px 15px;
+    }
+
+}
+
